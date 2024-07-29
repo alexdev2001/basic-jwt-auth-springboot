@@ -2,21 +2,23 @@ package com.auth.user.Security;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Component;
 
 import com.auth.user.Models.Role;
 import com.auth.user.Models.User;
 import com.auth.user.Repository.UserRepo;
 
+@Component
 public class UserDetailsImpl implements UserDetailsService {
 
     @Autowired
     UserRepo userRepo;
 
-    @Autowired
     Role role;
 
     @Override

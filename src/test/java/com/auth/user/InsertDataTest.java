@@ -29,7 +29,14 @@ public class InsertDataTest {
         String passEncod = passwordEncoder.encode(passRaw);
         user.setPassword(passEncod);
 
+        User user1 = new User();
+        user1.setUsername("yami");
+        String passRaw2 = "yami2000";
+        String passEncod2 = passwordEncoder.encode(passRaw2);
+        user1.setPassword(passEncod2);
+
         userRepo.save(user);
+        userRepo.save(user1);
     }
 
     @Test
