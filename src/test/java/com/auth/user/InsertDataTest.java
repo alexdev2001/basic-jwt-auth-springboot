@@ -42,10 +42,10 @@ public class InsertDataTest {
     @Test
     public void insertRole() {
         Role role = new Role();
-        role.setName("USER");
+        // role.setName("USER");
 
         Role role2 = new Role();
-        role2.setName("ADMIN");
+        // role2.setName("ADMIN");
 
         roleRepo.save(role);
         roleRepo.save(role2);

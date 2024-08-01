@@ -15,6 +15,7 @@ import com.auth.user.Repository.UserRepo;
 
 @Component
 public class UserDetailsImpl implements UserDetailsService {
+    
 
     @Autowired
     UserRepo userRepo;
@@ -32,7 +33,7 @@ public class UserDetailsImpl implements UserDetailsService {
         return org.springframework.security.core.userdetails.User.withUsername(user1.getUsername())
                         .password(user1.getPassword())
                         .authorities(user1.getRoles().stream()
-                                     .map(role -> new SimpleGrantedAuthority(role.getName()))
+                                     .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                                      .collect(Collectors.toList()))
                                      .build();
     }
