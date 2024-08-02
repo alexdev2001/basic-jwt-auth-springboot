@@ -36,8 +36,8 @@ public class SecurityConfig {
     @Autowired
     AuthenticationFailuireHandler authenticationFailuireHandler;
 
-    @Autowired
-    UserDetailsImpl userDetailsImpl;
+    // @Autowired
+    // UserDetailsImp1 userDetailsImpl;
 
     @Autowired
     UserDetailsService userDetailsService;
@@ -69,12 +69,12 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity  http) throws Exception {
         http.csrf(csrf -> csrf.disable())
-        .cors(cors -> cors.configurationSource(corsConfigurationSource))
-        .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
-        .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
+            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorize -> authorize
-                .requestMatchers( "/login", "/admin", "/user").permitAll()
+                .requestMatchers( "/login", "/admin", "/user", "/**").permitAll()
                 .anyRequest().authenticated()              
             )
             .formLogin(

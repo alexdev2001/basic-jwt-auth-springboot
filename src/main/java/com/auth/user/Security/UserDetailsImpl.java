@@ -13,6 +13,8 @@ import com.auth.user.Models.Role;
 import com.auth.user.Models.User;
 import com.auth.user.Repository.UserRepo;
 
+import jakarta.transaction.Transactional;
+
 @Component
 public class UserDetailsImpl implements UserDetailsService {
     
@@ -23,6 +25,7 @@ public class UserDetailsImpl implements UserDetailsService {
     Role role;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user1 = userRepo.findByUsername(username);
 
@@ -30,12 +33,14 @@ public class UserDetailsImpl implements UserDetailsService {
             throw new UsernameNotFoundException("could not find user");
         } 
 
-        return org.springframework.security.core.userdetails.User.withUsername(user1.getUsername())
-                        .password(user1.getPassword())
-                        .authorities(user1.getRoles().stream()
-                                     .map(role -> new SimpleGrantedAuthority(role.getName().name()))
-                                     .collect(Collectors.toList()))
-                                     .build();
+        // return org.springframework.security.core.userdetails.User.withUsername(user1.getUsername())
+        //                 .password(user1.getPassword())
+        //                 .authorities(user1.getRoles().stream()
+        //                              .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+        //                              .collect(Collectors.toList()))
+        //                              .build();
+        
+        return UserDetailsImp1.build(user1);
     }
     
 }

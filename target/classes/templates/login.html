@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Please Log In</h1>
-    <form th:action="@{/login}" method="post">
+    <form th:action="@{/api/auth/signin}" method="post">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username"><br>
         <label for="password">Password:</label>

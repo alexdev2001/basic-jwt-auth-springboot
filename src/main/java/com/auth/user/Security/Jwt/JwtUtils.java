@@ -2,6 +2,8 @@ package com.auth.user.Security.Jwt;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.crypto.SecretKey;
 
@@ -12,6 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.auth.user.Security.UserDetailsImp1;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -26,50 +31,47 @@ import jakarta.servlet.http.HttpServletRequest;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    @Value("${spring.app.jwtsecret}")
-    private String jwtSecret;
+    private static final String SECRET_KEY = "sGFSd4/9js73kldFksjf78/j9gGS74ksjf9fGd78s/jfgSd74kl==";
 
-    @Value("${spring.app.jwtExprirationMs}")
-    private int jwtExprirationMs;
+    // genertate JWT
+    public String generateJwtToken(Authentication authentication) {
+        UserDetailsImp1 userPrincipal = (UserDetailsImp1) authentication.getPrincipal();
 
-    // get jwt from header
-    public String getJwtFromHeader(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        logger.debug("Authorization Header: {}", bearerToken);
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("sub", userPrincipal.getUsername());
+        claims.put("iast", new Date(System.currentTimeMillis()));
+        claims.put("exp", new Date(System.currentTimeMillis() + 1000 * 60 * 120));
 
-    // generate token from username
-    public String generateTokenFromUsername(UserDetails userDetails) {
-        String username = userDetails.getUsername();
         return Jwts.builder()
-                    .subject(username)
-                    .issuedAt(new Date())
-                    .expiration(new Date((new Date()).getTime() + jwtExprirationMs))
-                    .signWith(key())
+                    .claims().add(claims).and()
+                    .signWith(getSignInKey(), Jwts.SIG.HS256)
                     .compact();
-    }
+    
+    }    
   
-    // signing key 
-    private Key key() {
-        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-    }
+  // get sign-in key
+  private SecretKey getSignInKey() {
+    byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+    return Keys.hmacShaKeyFor(keyBytes);
+  }
 
-    // get username from jwt
-    public String getUsernameFromToken(String token) {
-        return Jwts.parser().verifyWith((SecretKey) key())
-                .build().parseUnsecuredClaims(token)
-                .getPayload().getSubject();
+    // Extract username from jwt
+    public String getUserNameFromJwt(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        
+        return claims.getSubject();
     }
+    
 
     // validate the token
     public boolean validateJwtToken(String authToken) {
         try {
             System.out.println("validate");
-            Jwts.parser().verifyWith((SecretKey) key()).build().parseSignedClaims(authToken);
+            Jwts.parser().verifyWith(getSignInKey()).build().parseSignedClaims(authToken);
             return true;
         } catch (MalformedJwtException e) {
             logger.error("invalid JWT token: {}", e.getMessage());

@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/auth")
 public class AuthController {
     @Autowired
     AuthenticationManager authenticationManager;
@@ -47,8 +50,21 @@ public class AuthController {
     JwtUtils jwtUtils;
 
     @PostMapping(value = "/signin", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResponseEntity<?> authenticateUser(@Validated @RequestBody LoginRequest loginRequest) 
+    public ResponseEntity<?> authenticateUser(@Validated @RequestBody(required = false) LoginRequest loginRequest, 
+    @RequestParam(required = false) MultiValueMap<String, String> paramMap) 
     {
+        
+
+        String username;
+        String password;
+
+        if (loginRequest != null) {
+            username = loginRequest.getUsername();
+            password = loginRequest.getPassword();
+        } else {
+            username = paramMap.getFirst("username");
+            password = paramMap.getFirst("password");
+        }
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
@@ -57,7 +73,7 @@ public class AuthController {
 
         UserDetailsImp1 userDetails = (UserDetailsImp1) authentication.getPrincipal();
 
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+        String jwtToken = jwtUtils.generateJwtToken(authentication);
         List<String> roles = userDetails.getAuthorities().stream()
                                         .map(item -> item.getAuthority())
                                         .collect(Collectors.toList());
