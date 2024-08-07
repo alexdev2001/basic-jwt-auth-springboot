@@ -29,19 +29,22 @@ import jakarta.servlet.http.HttpServlet;
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
+    // Authentication succcess handler for redirection based on roles
     @Autowired
     AuthenticationSuccesshandler authenticationSuccesshandler;
 
+    // Authentication failure handler for when a user cannot be authentication
     @Autowired
     AuthenticationFailuireHandler authenticationFailuireHandler;
 
     // @Autowired
     // UserDetailsImp1 userDetailsImpl;
 
+    // inject the user service bean
     @Autowired
     UserDetailsService userDetailsService;
 
+    // the auth entrypoint to handle unauthorized access to a resource
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
@@ -70,11 +73,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity  http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
+            // .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorize -> authorize
-                .requestMatchers( "/login", "/admin", "/user", "/**").permitAll()
+                .requestMatchers( "/login", "/admin", "/user", "/api/auth/**").permitAll()
                 .anyRequest().authenticated()              
             )
             .formLogin(
@@ -91,17 +94,17 @@ public class SecurityConfig {
 
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain1(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
-            .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+    // @Bean
+    // public SecurityFilterChain securityFilterChain1(HttpSecurity http) throws Exception {
+    //     http.csrf(csrf -> csrf.disable())
+    //         .cors(cors -> cors.configurationSource(corsConfigurationSource))
+    //         .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
+    //         .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
             
 
-        http.addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+    //     http.addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
+    //     return http.build();
+    // }
 
     @Bean
     PasswordEncoder passwordEncoder() {

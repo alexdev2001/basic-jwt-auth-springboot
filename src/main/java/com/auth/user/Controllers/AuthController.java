@@ -49,24 +49,29 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @PostMapping(value = "/signin", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResponseEntity<?> authenticateUser(@Validated @RequestBody(required = false) LoginRequest loginRequest, 
+    @PostMapping(value = "/signin", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    public ResponseEntity<?> authenticateUser( 
     @RequestParam(required = false) MultiValueMap<String, String> paramMap) 
     {
-        
 
         String username;
         String password;
 
-        if (loginRequest != null) {
-            username = loginRequest.getUsername();
-            password = loginRequest.getPassword();
-        } else {
-            username = paramMap.getFirst("username");
-            password = paramMap.getFirst("password");
-        }
+        username = paramMap.getFirst("username");
+        password = paramMap.getFirst("password");
+
+        // if (loginRequest != null) {
+        //     username = loginRequest.getUsername();
+        //     password = loginRequest.getPassword();
+        // } else if  (paramMap != null) {
+        //     username = paramMap.getFirst("username");
+        //     password = paramMap.getFirst("password");
+        // } else {
+        //     return ResponseEntity.badRequest().body("Invalid login request");
+        // }
+
         Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+            new UsernamePasswordAuthenticationToken(username, password)
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
