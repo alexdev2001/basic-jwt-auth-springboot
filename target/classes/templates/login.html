@@ -5,12 +5,55 @@
 </head>
 <body>
     <h1>Please Log In</h1>
-    <form th:action="@{/api/auth/signin}" method="post">
+    <form  method="post" id="loginForm">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username"><br>
         <label for="password">Password:</label>
         <input type="password" id="password" name="password"><br>
         <button type="submit">Login</button>
     </form>
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+            // event.preventDefault();
+        
+            const formData = new FormData(document.getElementById("loginForm"));
+        
+            fetch('api/auth/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(formData).toString()
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Login failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const jwtToken = data.token;
+
+                if (jwtToken == null) {
+                    console.log('no token collected');
+                }
+                
+                console.log('recieved token: ', jwtToken);
+                const storedToken = localStorage.setItem('jwtToken', jwtToken);
+                console.log('stored token: ', jwtToken);
+        
+               /* fetch('/user', {
+                    method: 'GET',
+                    headers : {
+                        'Authorization': 'Bearer ' + jwtToken
+                    }
+                })
+                .then(response => response.json());
+                */
+            });
+            
+        });    
+    </script>
+    
 </body>
 </html>
