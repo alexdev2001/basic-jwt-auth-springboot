@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Please Log In</h1>
-    <form  method="post" id="loginForm">
+    <form method="post" id="loginForm">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username"><br>
         <label for="password">Password:</label>
@@ -14,7 +14,7 @@
     </form>
     <script>
         document.getElementById("loginForm").addEventListener("submit", function(event) {
-            // event.preventDefault();
+            event.preventDefault(); // Prevent the default form submission behavior
         
             const formData = new FormData(document.getElementById("loginForm"));
         
@@ -32,28 +32,48 @@
                 return response.json();
             })
             .then(data => {
+                console.log('response: ', data);
                 const jwtToken = data.token;
+                const redirectUrl = data.redirectUrl;
 
-                if (jwtToken == null) {
-                    console.log('no token collected');
+                if (redirectUrl == null) {
+                    console.log('no url')
+                } else {
+                    console.log(redirectUrl);
                 }
-                
-                console.log('recieved token: ', jwtToken);
-                const storedToken = localStorage.setItem('jwtToken', jwtToken);
-                console.log('stored token: ', jwtToken);
         
-               /* fetch('/user', {
-                    method: 'GET',
-                    headers : {
-                        'Authorization': 'Bearer ' + jwtToken
-                    }
-                })
-                .then(response => response.json());
-                */
+                if (jwtToken == null) {
+                    console.log('No token collected');
+                } else {
+                    console.log('Received token:', jwtToken);
+                    localStorage.setItem('jwtToken', jwtToken);
+                    console.log('Stored token:', jwtToken);
+                
+        
+                    // Manually fetch the content of the redirect URL with the Authorization header
+                    fetch(redirectUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + jwtToken
+                        }
+                    })
+                    .then(response => response.text())  // Use .text() if you want to inject HTML
+                    .then(htmlContent => {
+                        // Replace the current document content with the fetched HTML content
+                        document.open();
+                        document.write(htmlContent);
+                        document.close();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching protected page:', error);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
-            
-        });    
+        });
+        
     </script>
-    
 </body>
 </html>

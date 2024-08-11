@@ -1,6 +1,8 @@
 package com.auth.user.Controllers;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.auth.user.Models.LoginRequest;
@@ -83,8 +86,21 @@ public class AuthController {
                                         .map(item -> item.getAuthority())
                                         .collect(Collectors.toList());
 
-        LoginResponse response = new LoginResponse(jwtToken, roles);
+        // Determine the redirect URL based on the user's roles
+        String defaultUrl = "/user";  // Default URL for standard users
+        for (GrantedAuthority authority : userDetails.getAuthorities()) {
+            if (authority.getAuthority().equals("ADMIN")) {
+                defaultUrl = "/admin";  // Redirect URL for admins
+                break;
+            }
+        }
 
-        return ResponseEntity.ok(response);
+        // Create a response body that includes the token and redirect URL
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("token", jwtToken);
+        responseBody.put("redirectUrl", defaultUrl);
+
+        // Return the response as a JSON object
+        return ResponseEntity.ok(responseBody);
     }
 }
