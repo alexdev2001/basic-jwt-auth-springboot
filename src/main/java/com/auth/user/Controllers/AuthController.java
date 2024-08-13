@@ -89,7 +89,7 @@ public class AuthController {
         // Determine the redirect URL based on the user's roles
         String defaultUrl = "/user";  // Default URL for standard users
         for (GrantedAuthority authority : userDetails.getAuthorities()) {
-            if (authority.getAuthority().equals("ADMIN")) {
+            if (authority.getAuthority().equals("ROLE_ADMIN")) {
                 defaultUrl = "/admin";  // Redirect URL for admins
                 break;
             }

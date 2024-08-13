@@ -2,5 +2,6 @@ package com.auth.user.Models;
 
 public enum ERole {
     USER,
-    ADMIN
+    ADMIN,
+    ROLE_ADMIN
 }

@@ -31,12 +31,11 @@ public class Role {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long role_id;
 
-    @Enumerated(EnumType.STRING)
+    
     @Column(length = 20)
-    private ERole name;
+    private String name;
 
     @ManyToMany(mappedBy = "roles")
     Set<User> users;

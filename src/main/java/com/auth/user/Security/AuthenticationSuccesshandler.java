@@ -31,10 +31,10 @@ public class AuthenticationSuccesshandler implements AuthenticationSuccessHandle
         String defaultUrl = "/user";
 
         for(GrantedAuthority authority : authorities) {
-            if (authority.getAuthority().equals("USER")) {
+            if (authority.getAuthority().equals("ROLE_USER")) {
                 defaultUrl = "/user";
                 break;
-            } else if (authority.getAuthority().equals("ADMIN")) {
+            } else if (authority.getAuthority().equals("ROLE_ADMIN")) {
                 defaultUrl = "/admin";
                 break;
             }

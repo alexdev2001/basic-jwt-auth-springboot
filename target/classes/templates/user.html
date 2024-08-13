@@ -5,5 +5,43 @@
 </head>
 <body>
     <h1>Welcome to the Home Page</h1>
+    <div>
+        <button onclick="fetchWithToken('/usertest')">User</button>
+        <button onclick="fetchWithToken('/admintest')">Admin</button>
+    </div>
+
+    <script>
+        function fetchWithToken(url) {
+            const jwt = localStorage.getItem('jwtToken'); 
+
+            if (!jwt) {
+                console.error('No JWT token found in storage.');
+                return;
+            }
+
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${jwt}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Request failed with status ' + response.status);
+                }
+            })
+            .then(data => {
+                
+                // You might want to redirect or display the data in the UI
+                document.body.innerHTML = data;  // Fixed comment syntax
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+   
 </body>
 </html>

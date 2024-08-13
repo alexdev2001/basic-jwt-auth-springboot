@@ -77,8 +77,10 @@ public class SecurityConfig {
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorize -> authorize
-                .requestMatchers( "/login", "/admin", "/user", "/api/auth/**").permitAll()
-                .anyRequest().authenticated()              
+                .requestMatchers( "/login", "/admin/**", "/user/**", "/api/auth/**").permitAll()
+                .requestMatchers("/admintest").hasRole("ADMIN")
+                .requestMatchers("/usertest").hasRole("USER")
+                .anyRequest().authenticated()             
             )
             .formLogin(
                 form -> form
@@ -88,24 +90,14 @@ public class SecurityConfig {
                 .failureHandler(authenticationFailuireHandler)
             )
             .httpBasic(Customizer.withDefaults());
+        
 
         http.addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
 
     }
 
-    // @Bean
-    // public SecurityFilterChain securityFilterChain1(HttpSecurity http) throws Exception {
-    //     http.csrf(csrf -> csrf.disable())
-    //         .cors(cors -> cors.configurationSource(corsConfigurationSource))
-    //         .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
-    //         .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-            
-
-    //     http.addFilterBefore(authFilter(), UsernamePasswordAuthenticationFilter.class);
-    //     return http.build();
-    // }
-
+    
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

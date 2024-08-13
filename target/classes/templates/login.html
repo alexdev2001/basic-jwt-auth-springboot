@@ -32,48 +32,47 @@
                 return response.json();
             })
             .then(data => {
-                console.log('response: ', data);
                 const jwtToken = data.token;
                 const redirectUrl = data.redirectUrl;
-
-                if (redirectUrl == null) {
-                    console.log('no url')
-                } else {
-                    console.log(redirectUrl);
-                }
         
-                if (jwtToken == null) {
-                    console.log('No token collected');
-                } else {
-                    console.log('Received token:', jwtToken);
+                if (jwtToken) {
                     localStorage.setItem('jwtToken', jwtToken);
-                    console.log('Stored token:', jwtToken);
-                
         
-                    // Manually fetch the content of the redirect URL with the Authorization header
-                    fetch(redirectUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': 'Bearer ' + jwtToken
-                        }
-                    })
-                    .then(response => response.text())  // Use .text() if you want to inject HTML
-                    .then(htmlContent => {
-                        // Replace the current document content with the fetched HTML content
-                        document.open();
-                        document.write(htmlContent);
-                        document.close();
-                    })
-                    .catch(error => {
-                        console.error('Error fetching protected page:', error);
-                    });
+                    if (redirectUrl) {
+                        fetch(redirectUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': 'Bearer ' + jwtToken
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to fetch protected resource');
+                            }
+                            return response.text(); // Assuming the response is HTML content
+                        })
+                        .then(htmlContent => {
+                            // Replace the current document content with the fetched HTML content
+                            document.open();
+                            document.write(htmlContent);
+                            document.close();
+        
+                            // Update the URL in the address bar without reloading the page
+                            history.pushState(null, null, redirectUrl);
+                        })
+                        .catch(error => {
+                            console.error('Error fetching protected page:', error);
+                        });
+                    }
+                } else {
+                    console.log('No token collected');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
             });
         });
-        
+         
     </script>
 </body>
 </html>
