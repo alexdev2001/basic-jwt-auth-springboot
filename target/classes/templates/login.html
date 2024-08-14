@@ -14,7 +14,7 @@
     </form>
     <script>
         document.getElementById("loginForm").addEventListener("submit", function(event) {
-            event.preventDefault(); // Prevent the default form submission behavior
+            event.preventDefault(); 
         
             const formData = new FormData(document.getElementById("loginForm"));
         
@@ -49,15 +49,13 @@
                             if (!response.ok) {
                                 throw new Error('Failed to fetch protected resource');
                             }
-                            return response.text(); // Assuming the response is HTML content
+                            return response.text(); 
                         })
                         .then(htmlContent => {
-                            // Replace the current document content with the fetched HTML content
                             document.open();
                             document.write(htmlContent);
                             document.close();
         
-                            // Update the URL in the address bar without reloading the page
                             history.pushState(null, null, redirectUrl);
                         })
                         .catch(error => {

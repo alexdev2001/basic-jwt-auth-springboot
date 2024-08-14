@@ -33,9 +33,8 @@
                 }
             })
             .then(data => {
-                
-                // You might want to redirect or display the data in the UI
-                document.body.innerHTML = data;  // Fixed comment syntax
+                document.body.innerHTML = data;
+                history.pushState(null, null, url);  // Fixed comment syntax
             })
             .catch(error => {
                 console.error('Error:', error);

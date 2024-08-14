@@ -61,6 +61,7 @@ public class SecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
+    // set the authentication provider using the user details service
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -69,11 +70,12 @@ public class SecurityConfig {
         return authProvider;
     }
     
+    // set security filter
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity  http) throws Exception {
         http.csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource))
-            // .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
+            .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
             .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(
                 authorize -> authorize
