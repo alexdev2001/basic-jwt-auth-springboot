@@ -13,11 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,16 +48,18 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
-    @PostMapping(value = "/signin", consumes = {MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    @PostMapping(value = "/signin")
     public ResponseEntity<?> authenticateUser( 
-    @RequestParam(required = false) MultiValueMap<String, String> paramMap) 
+//    @RequestParam(required = false) MultiValueMap<String, String> paramMap
+            @RequestBody @ModelAttribute("users") LoginRequest loginRequest
+    )
     {
 
         String username;
         String password;
 
-        username = paramMap.getFirst("username");
-        password = paramMap.getFirst("password");
+        username = loginRequest.getUsername();
+        password = loginRequest.getPassword();
 
         // if (loginRequest != null) {
         //     username = loginRequest.getUsername();

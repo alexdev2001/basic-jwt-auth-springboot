@@ -38,17 +38,7 @@ public class InsertDataTest {
         userRepo.save(user);
         userRepo.save(user1);
     }
-    
-    @Test
-    public void insertUser1() {
-        User user2 = new User();
-        user2.setUsername("francis");
-        String rawPass1 = "francis2024";
-        String encPass1 = passwordEncoder.encode(rawPass1);
-        user2.setPassword(encPass1);
 
-        userRepo.save(user2);
-    }
 
     @Test
     public void insertRole() {
@@ -62,24 +52,8 @@ public class InsertDataTest {
         roleRepo.save(role2);
     }
 
-    @Test
-    public void insertRole1() {
-        Role role = new Role();
-        role.setName("ROLE_ADMIN");
 
-        roleRepo.save(role);
-    }
 
-    @Test
-    public void insertUser2() {
-        User user3 = new User();
-        user3.setUsername("austin");
-        String rawpass2 = "austin2001";
-        String encpass2 = passwordEncoder.encode(rawpass2);
 
-        user3.setPassword(encpass2);
-
-        userRepo.save(user3);
-    }
 
 }
